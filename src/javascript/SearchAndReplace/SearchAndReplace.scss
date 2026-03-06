@@ -1,0 +1,477 @@
+$spacing-unit: 6px;
+
+.layout {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
+}
+
+.container {
+    padding: $spacing-unit * 3;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+// Hero Search Section
+.searchHero {
+    background: var(--color-light);
+    border: 1px solid var(--color-gray_light);
+    border-radius: $spacing-unit;
+    padding: $spacing-unit * 6;
+    margin-bottom: $spacing-unit * 4;
+}
+
+.searchHeroContent {
+    position: relative;
+}
+
+.searchHeroTitle {
+    margin-bottom: $spacing-unit * 2;
+}
+
+.searchHeroDescription {
+    margin-bottom: $spacing-unit * 4;
+    color: var(--color-dark);
+}
+
+.searchBar {
+    display: flex;
+    gap: $spacing-unit * 2;
+    max-width: 800px;
+}
+
+.searchInput {
+    flex: 1;
+}
+
+.searchLanguageDropdown {
+    min-width: 130px;
+}
+
+.searchInfoBar {
+    display: flex;
+    gap: $spacing-unit * 2;
+    margin-top: $spacing-unit * 3;
+    flex-wrap: wrap;
+}
+
+// Results Section
+.resultsSection {
+    margin-top: $spacing-unit * 3;
+}
+
+.loadingState,
+.errorState,
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: $spacing-unit * 10;
+    gap: $spacing-unit * 2;
+    background: var(--color-light);
+    border: 1px solid var(--color-gray_light);
+    border-radius: $spacing-unit;
+    text-align: center;
+}
+
+.loadingText {
+    margin-top: $spacing-unit * 2;
+}
+
+.errorTitle,
+.emptyStateTitle {
+    margin-bottom: $spacing-unit;
+}
+
+.emptyStateAction {
+    margin-top: $spacing-unit * 2;
+}
+
+// Results Container
+.resultsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-unit * 3;
+}
+
+.resultsSummaryCard {
+    background: var(--color-light);
+    border: 1px solid var(--color-gray_light);
+    border-radius: $spacing-unit;
+    padding: $spacing-unit * 4;
+}
+
+.resultsSummaryContent {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: $spacing-unit * 4;
+}
+
+.resultsSummaryStats {
+    display: flex;
+    align-items: baseline;
+    gap: $spacing-unit * 2;
+}
+
+.resultsCount {
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--color-accent);
+}
+
+.resultsLabel {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.resultsSummaryInfo {
+    display: flex;
+    gap: $spacing-unit * 2;
+    flex-wrap: wrap;
+}
+
+// Search Filters Panel
+.searchFiltersPanel {
+    background: var(--color-light);
+    border: 1px solid var(--color-gray_light);
+    border-radius: $spacing-unit;
+    padding: $spacing-unit * 4;
+    margin-bottom: $spacing-unit * 4;
+}
+
+.filtersHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-unit * 3;
+}
+
+.filtersGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: $spacing-unit * 3;
+    margin-bottom: $spacing-unit * 3;
+}
+
+.filterItem {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-unit;
+}
+
+.filterDropdown {
+    width: 100%;
+}
+
+.dateRangeInputs {
+    display: flex;
+    gap: $spacing-unit * 2;
+}
+
+.filtersActions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+// Results Table
+.resultsTableContainer {
+    background: var(--color-light);
+    border: 1px solid var(--color-gray_light);
+    border-radius: $spacing-unit;
+    overflow: hidden;
+}
+
+.resultsTable {
+    width: 100%;
+}
+
+.selectedRow {
+    background-color: var(--color-accent_light20);
+}
+
+.expandedRow {
+    background-color: var(--color-gray_light40);
+    height: auto !important;
+}
+
+.expandedRowCell {
+    padding: 0;
+    width: 100%;
+    white-space: normal;
+    overflow: visible;
+    border-top: 1px solid var(--color-gray_light);
+    box-sizing: border-box;
+}
+
+.pathText {
+    display: block;
+    color: var(--color-dark);
+    font-size: 0.875rem;
+    word-break: break-word;
+}
+
+.parentLink {
+    display: inline-block;
+    margin-top: $spacing-unit;
+    font-size: 0.75rem;
+    color: var(--color-accent);
+    text-decoration: none;
+}
+
+.parentLink:hover {
+    text-decoration: underline;
+}
+
+.matchesBadges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-unit;
+}
+
+.propertiesPreview {
+    width: 100%;
+    box-sizing: border-box;
+    padding: $spacing-unit * 3;
+}
+
+.propertiesList {
+    margin-top: $spacing-unit * 2;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-unit * 2;
+}
+
+.propertyItem {
+    padding: $spacing-unit * 2;
+    background: var(--color-light);
+    border: 1px solid var(--color-gray_light);
+    border-radius: $spacing-unit / 2;
+}
+
+.propertyHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-unit;
+}
+
+.propertyValue {
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+.propertyValueHtml {
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+.propertyValueHtml p,
+.propertyValueHtml div,
+.propertyValueHtml span,
+.propertyValueHtml li {
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+.propertyValueHtml p {
+    margin: 0 0 $spacing-unit * 2;
+}
+
+.propertyValueHtml p:last-child {
+    margin-bottom: 0;
+}
+
+.highlight {
+    background-color: var(--color-warning);
+    padding: 2px 4px;
+    border-radius: 2px;
+}
+
+.replaceModal {
+    max-width: 900px;
+    width: min(900px, calc(100vw - #{$spacing-unit * 6}));
+    max-height: calc(100vh - #{$spacing-unit * 8});
+    background: var(--color-light);
+    border: 1px solid var(--color-gray_light);
+    border-radius: $spacing-unit;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.42);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: $spacing-unit * 3;
+    z-index: 2200;
+}
+
+.modalHeader {
+    padding: $spacing-unit * 3;
+    border-bottom: 1px solid var(--color-gray_light);
+}
+
+.modalBody {
+    padding: $spacing-unit * 3;
+    overflow-y: auto;
+}
+
+.modalFooter {
+    padding: $spacing-unit * 2 $spacing-unit * 3;
+    border-top: 1px solid var(--color-gray_light);
+    display: flex;
+    justify-content: flex-end;
+    gap: $spacing-unit * 2;
+}
+
+.modalReplaceInputSection {
+    display: grid;
+    gap: $spacing-unit * 2;
+    margin-top: $spacing-unit * 3;
+}
+
+.modalReplaceInput {
+    width: 100%;
+}
+
+.modalPropertiesSelection {
+    margin-top: $spacing-unit * 4;
+}
+
+.modalPropertiesHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $spacing-unit * 2;
+}
+
+.modalPropertiesList {
+    display: grid;
+    gap: $spacing-unit;
+    max-height: 180px;
+    overflow-y: auto;
+    padding: $spacing-unit * 2;
+    border: 1px solid var(--color-gray_light);
+    border-radius: $spacing-unit;
+    background: var(--color-gray_light40);
+}
+
+.modalPreviewSection {
+    display: grid;
+    gap: $spacing-unit * 3;
+    margin-top: $spacing-unit * 3;
+}
+
+.modalPreviewNode {
+    padding: $spacing-unit * 2;
+    border: 1px solid var(--color-gray_light);
+    border-radius: $spacing-unit;
+    background: var(--color-gray_light40);
+}
+
+.modalPreviewProperty {
+    margin-top: $spacing-unit * 2;
+}
+
+.modalPreviewValues {
+    display: grid;
+    gap: $spacing-unit;
+    margin-top: $spacing-unit;
+}
+
+.modalPreviewValueItem {
+    display: grid;
+    gap: $spacing-unit;
+}
+
+.modalOldValue,
+.modalNewValue {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.modalPreviewHtml {
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+.modalPreviewHtml p,
+.modalPreviewHtml div,
+.modalPreviewHtml span,
+.modalPreviewHtml li {
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+.modalPreviewHtml p {
+    margin: 0 0 $spacing-unit;
+}
+
+.modalPreviewHtml p:last-child {
+    margin-bottom: 0;
+}
+
+.modalProgressSection {
+    display: grid;
+    gap: $spacing-unit * 2;
+    justify-items: center;
+    padding: $spacing-unit * 5 0;
+}
+
+.modalProgressBar {
+    width: 100%;
+}
+
+.modalCompleteSection {
+    display: grid;
+    gap: $spacing-unit * 2;
+    justify-items: center;
+    text-align: center;
+}
+
+.successIcon {
+    color: var(--color-success);
+}
+
+.warningIcon {
+    color: var(--color-warning_dark);
+}
+
+.errorIcon {
+    color: var(--color-danger);
+}
+
+.modalResultSummary {
+    display: flex;
+    gap: $spacing-unit;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.modalErrorList {
+    width: 100%;
+    display: grid;
+    gap: $spacing-unit;
+    text-align: left;
+    padding: $spacing-unit * 2;
+    border-radius: $spacing-unit;
+    background: var(--color-danger_plain20);
+}

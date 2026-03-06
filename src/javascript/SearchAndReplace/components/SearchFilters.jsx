@@ -111,7 +111,7 @@ export const SearchFilters = ({availableNodeTypes, filters, onFiltersChange, sel
                         {t('label.contentType')}
                     </Typography>
                     <Dropdown
-                        className={styles.filterDropdown}
+                        className={`${styles.filterDropdown} ${styles.filterDropdownBottomAligned}`}
                         data={nodeTypeDropdownData}
                         value={localFilters.nodeType || ''}
                         variant="outlined"
@@ -126,18 +126,24 @@ export const SearchFilters = ({availableNodeTypes, filters, onFiltersChange, sel
                         {t('label.createdDate')}
                     </Typography>
                     <div className={styles.dateRangeInputs}>
-                        <Input
-                            type="date"
-                            placeholder={t('label.from')}
-                            value={localFilters.createdAfter || ''}
-                            onChange={e => handleFilterChange('createdAfter', e.target.value)}
-                        />
-                        <Input
-                            type="date"
-                            placeholder={t('label.to')}
-                            value={localFilters.createdBefore || ''}
-                            onChange={e => handleFilterChange('createdBefore', e.target.value)}
-                        />
+                        <div className={styles.dateField}>
+                            <Typography variant="caption">{t('label.startDate')}</Typography>
+                            <Input
+                                type="date"
+                                placeholder={t('label.from')}
+                                value={localFilters.createdAfter || ''}
+                                onChange={e => handleFilterChange('createdAfter', e.target.value)}
+                            />
+                        </div>
+                        <div className={styles.dateField}>
+                            <Typography variant="caption">{t('label.endDate')}</Typography>
+                            <Input
+                                type="date"
+                                placeholder={t('label.to')}
+                                value={localFilters.createdBefore || ''}
+                                onChange={e => handleFilterChange('createdBefore', e.target.value)}
+                            />
+                        </div>
                     </div>
                 </div>
 
@@ -146,18 +152,24 @@ export const SearchFilters = ({availableNodeTypes, filters, onFiltersChange, sel
                         {t('label.modifiedDate')}
                     </Typography>
                     <div className={styles.dateRangeInputs}>
-                        <Input
-                            type="date"
-                            placeholder={t('label.from')}
-                            value={localFilters.modifiedAfter || ''}
-                            onChange={e => handleFilterChange('modifiedAfter', e.target.value)}
-                        />
-                        <Input
-                            type="date"
-                            placeholder={t('label.to')}
-                            value={localFilters.modifiedBefore || ''}
-                            onChange={e => handleFilterChange('modifiedBefore', e.target.value)}
-                        />
+                        <div className={styles.dateField}>
+                            <Typography variant="caption">{t('label.startDate')}</Typography>
+                            <Input
+                                type="date"
+                                placeholder={t('label.from')}
+                                value={localFilters.modifiedAfter || ''}
+                                onChange={e => handleFilterChange('modifiedAfter', e.target.value)}
+                            />
+                        </div>
+                        <div className={styles.dateField}>
+                            <Typography variant="caption">{t('label.endDate')}</Typography>
+                            <Input
+                                type="date"
+                                placeholder={t('label.to')}
+                                value={localFilters.modifiedBefore || ''}
+                                onChange={e => handleFilterChange('modifiedBefore', e.target.value)}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

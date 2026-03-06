@@ -37,6 +37,36 @@ export const SearchAndReplace = ({match}) => {
     const [searchExecuted, setSearchExecuted] = useState(false);
     const [selectedLanguage, setSelectedLanguage] = useState((i18n?.language || 'en').split('-')[0]);
 
+    const sanitizeFiltersPayload = useCallback(rawFilters => {
+        if (!rawFilters || typeof rawFilters !== 'object') {
+            return {};
+        }
+
+        return Object.entries(rawFilters).reduce((acc, [key, value]) => {
+            if (value === null || value === undefined) {
+                return acc;
+            }
+
+            if (Array.isArray(value)) {
+                if (value.length > 0) {
+                    acc[key] = value;
+                }
+
+                return acc;
+            }
+
+            const normalizedValue = typeof value === 'string' ? value.trim() : value;
+            if (normalizedValue === '') {
+                return acc;
+            }
+
+            acc[key] = normalizedValue;
+            return acc;
+        }, {});
+    }, []);
+
+    const normalizedFilters = useMemo(() => sanitizeFiltersPayload(filters), [filters, sanitizeFiltersPayload]);
+
     const {data: siteLanguagesData} = useQuery(GET_SITE_LANGUAGES_QUERY, {
         variables: {
             workspace: 'EDIT',
@@ -101,7 +131,7 @@ export const SearchAndReplace = ({match}) => {
             termToSearch: currentSearchTerm,
             siteKey,
             language: selectedLanguage,
-            filters: Object.keys(filters).length > 0 ? filters : null
+            filters: Object.keys(normalizedFilters).length > 0 ? normalizedFilters : null
         },
         skip: !currentSearchTerm || currentSearchTerm.trim() === '',
         fetchPolicy: 'network-only'
@@ -125,9 +155,9 @@ export const SearchAndReplace = ({match}) => {
 
     // Filter change handler
     const handleFiltersChange = useCallback(newFilters => {
-        setFilters(newFilters);
+        setFilters(sanitizeFiltersPayload(newFilters));
         setSelectedNodes([]);
-    }, []);
+    }, [sanitizeFiltersPayload]);
 
     // Clear all
     const handleClear = useCallback(() => {
@@ -154,14 +184,72 @@ export const SearchAndReplace = ({match}) => {
 
     const searchResults = data?.searchAndReplace?.searchNodes || null;
     const rawNodes = Array.isArray(searchResults?.nodes) ? searchResults.nodes : [];
-    const selectedContentType = filters.nodeType;
+    const selectedContentType = normalizedFilters.nodeType;
     const filteredNodes = useMemo(() => {
-        if (!selectedContentType) {
-            return rawNodes;
-        }
+        const parseBoundary = (dateValue, endOfDay = false) => {
+            if (!dateValue || typeof dateValue !== 'string') {
+                return null;
+            }
 
-        return rawNodes.filter(node => node && node.nodeType === selectedContentType);
-    }, [rawNodes, selectedContentType]);
+            const normalizedDate = dateValue.trim();
+            if (!normalizedDate) {
+                return null;
+            }
+
+            let isoDate = normalizedDate;
+            const slashDateMatch = normalizedDate.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+            const dashDateMatch = normalizedDate.match(/^(\d{2})-(\d{2})-(\d{4})$/);
+            if (slashDateMatch || dashDateMatch) {
+                const dateMatch = slashDateMatch || dashDateMatch;
+                isoDate = `${dateMatch[3]}-${dateMatch[2]}-${dateMatch[1]}`;
+            }
+
+            const parsedDate = new Date(`${isoDate}${endOfDay ? 'T23:59:59.999' : 'T00:00:00.000'}`);
+            return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+        };
+
+        const matchesDateRange = (nodeDateValue, startDate, endDate) => {
+            if (!startDate && !endDate) {
+                return true;
+            }
+
+            if (!nodeDateValue) {
+                return false;
+            }
+
+            const parsedNodeDate = new Date(nodeDateValue);
+            if (Number.isNaN(parsedNodeDate.getTime())) {
+                return false;
+            }
+
+            if (startDate && parsedNodeDate < startDate) {
+                return false;
+            }
+
+            return !(endDate && parsedNodeDate > endDate);
+        };
+
+        const createdAfterDate = parseBoundary(normalizedFilters.createdAfter, false);
+        const createdBeforeDate = parseBoundary(normalizedFilters.createdBefore, true);
+        const modifiedAfterDate = parseBoundary(normalizedFilters.modifiedAfter, false);
+        const modifiedBeforeDate = parseBoundary(normalizedFilters.modifiedBefore, true);
+
+        return rawNodes.filter(node => {
+            if (!node) {
+                return false;
+            }
+
+            if (selectedContentType && node.nodeType !== selectedContentType) {
+                return false;
+            }
+
+            if (!matchesDateRange(node.created, createdAfterDate, createdBeforeDate)) {
+                return false;
+            }
+
+            return matchesDateRange(node.lastModified, modifiedAfterDate, modifiedBeforeDate);
+        });
+    }, [rawNodes, selectedContentType, normalizedFilters]);
     const hasResults = filteredNodes.length > 0;
     const availableNodeTypes = useMemo(() => {
         const types = new Set();
@@ -172,7 +260,7 @@ export const SearchAndReplace = ({match}) => {
         });
         return Array.from(types);
     }, [rawNodes]);
-    const activeFilterCount = Object.keys(filters).filter(key => filters[key] && filters[key] !== '').length;
+    const activeFilterCount = Object.keys(normalizedFilters).length;
     const displayedResultCount = filteredNodes.length;
 
     return (
@@ -278,7 +366,7 @@ export const SearchAndReplace = ({match}) => {
                 {showFilters && (
                     <SearchFilters
                         availableNodeTypes={availableNodeTypes}
-                        filters={filters}
+                        filters={normalizedFilters}
                         selectedLanguage={selectedLanguage}
                         siteKey={siteKey}
                         onFiltersChange={handleFiltersChange}

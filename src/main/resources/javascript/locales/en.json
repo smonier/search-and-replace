@@ -23,6 +23,8 @@
     "selectProperties": "Select properties...",
     "createdDate": "Created Date",
     "modifiedDate": "Modified Date",
+    "startDate": "Start Date",
+    "endDate": "End Date",
     "from": "From",
     "to": "To",
     "applyFilters": "Apply Filters",

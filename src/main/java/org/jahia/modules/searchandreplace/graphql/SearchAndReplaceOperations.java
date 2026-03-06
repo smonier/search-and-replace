@@ -21,6 +21,9 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.qom.*;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -45,6 +48,9 @@ public class SearchAndReplaceOperations {
     private static final Pattern LANGUAGE_PATTERN = Pattern.compile("^[A-Za-z]{2,8}([_-][A-Za-z0-9]{2,8})*$");
     private static final Pattern NODE_TYPE_PATTERN = Pattern.compile("^[A-Za-z][A-Za-z0-9:_-]*$");
     private static final Pattern PROPERTY_NAME_PATTERN = Pattern.compile("^[A-Za-z][A-Za-z0-9:_-]*$");
+    private static final DateTimeFormatter DAY_MONTH_YEAR_SLASH_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter DAY_MONTH_YEAR_DASH_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    private static final DateTimeFormatter MONTH_DAY_YEAR_SLASH_FORMAT = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
     private JCRTemplate jcrTemplate;
 
@@ -488,55 +494,6 @@ public class SearchAndReplaceOperations {
             constraint = qom.and(constraint, qom.fullTextSearch("s", null, qom.literal(valueFactory.createValue(fullTextExpression))));
         }
 
-        if (filters != null) {
-            Calendar createdAfter = parseDateFilter(filters.getCreatedAfter());
-            if (createdAfter != null) {
-                constraint = qom.and(
-                    constraint,
-                    qom.comparison(
-                        qom.propertyValue("s", "jcr:created"),
-                        QueryObjectModelConstants.JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
-                        qom.literal(valueFactory.createValue(createdAfter))
-                    )
-                );
-            }
-            Calendar createdBefore = parseDateFilter(filters.getCreatedBefore());
-            if (createdBefore != null) {
-                constraint = qom.and(
-                    constraint,
-                    qom.comparison(
-                        qom.propertyValue("s", "jcr:created"),
-                        QueryObjectModelConstants.JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
-                        qom.literal(valueFactory.createValue(createdBefore))
-                    )
-                );
-            }
-
-            Calendar modifiedAfter = parseDateFilter(filters.getModifiedAfter());
-            if (modifiedAfter != null) {
-                constraint = qom.and(
-                    constraint,
-                    qom.comparison(
-                        qom.propertyValue("s", "jcr:lastModified"),
-                        QueryObjectModelConstants.JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
-                        qom.literal(valueFactory.createValue(modifiedAfter))
-                    )
-                );
-            }
-
-            Calendar modifiedBefore = parseDateFilter(filters.getModifiedBefore());
-            if (modifiedBefore != null) {
-                constraint = qom.and(
-                    constraint,
-                    qom.comparison(
-                        qom.propertyValue("s", "jcr:lastModified"),
-                        QueryObjectModelConstants.JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
-                        qom.literal(valueFactory.createValue(modifiedBefore))
-                    )
-                );
-            }
-        }
-
         return qom.createQuery(selector, constraint, null, null);
     }
 
@@ -565,24 +522,23 @@ public class SearchAndReplaceOperations {
                 return null;
             }
 
+            if (!matchesDateFilters(node, filters, language)) {
+                return null;
+            }
+
             GqlSearchResultNode resultNode = new GqlSearchResultNode();
             resultNode.setUuid(node.getIdentifier());
             resultNode.setPath(node.getPath());
             resultNode.setName(node.getName());
-            resultNode.setDisplayName(node.getDisplayableName());
+            resultNode.setDisplayName(resolveDisplayName(node, language));
             resultNode.setNodeType(node.getPrimaryNodeTypeName());
             resultNode.setNodeTypeLabel(node.getPrimaryNodeType().getName());
             
-            Calendar creationDate = null;
-            if (node.hasProperty("jcr:created")) {
-                creationDate = node.getProperty("jcr:created").getDate();
-            }
+            JCRNodeWrapper translationNode = getTranslationNode(node, language);
+            Calendar creationDate = resolveNodeDate(node, translationNode, "jcr:created");
             resultNode.setCreated(formatDate(creationDate));
             
-            Calendar lastModified = null;
-            if (node.hasProperty("jcr:lastModified")) {
-                lastModified = node.getProperty("jcr:lastModified").getDate();
-            }
+            Calendar lastModified = resolveNodeDate(node, translationNode, "jcr:lastModified");
             resultNode.setLastModified(formatDate(lastModified));
             resultNode.setParentPath(node.getParent().getPath());
             resultNode.setParentContainerPath(findParentContainerPath(node));
@@ -811,6 +767,73 @@ public class SearchAndReplaceOperations {
         return new ArrayList<>(unique.values());
     }
 
+    private String resolveDisplayName(JCRNodeWrapper node, String language) throws RepositoryException {
+        String translatedTitle = getNodeTitle(getTranslationNode(node, language));
+        if (StringUtils.isNotBlank(translatedTitle)) {
+            return translatedTitle;
+        }
+
+        String localTitle = getNodeTitle(node);
+        if (StringUtils.isNotBlank(localTitle)) {
+            return localTitle;
+        }
+
+        String displayableName = StringUtils.trimToNull(node.getDisplayableName());
+        return displayableName != null ? displayableName : node.getName();
+    }
+
+    private String getNodeTitle(JCRNodeWrapper node) throws RepositoryException {
+        if (node == null || !node.hasProperty("jcr:title")) {
+            return null;
+        }
+
+        return StringUtils.trimToNull(node.getProperty("jcr:title").getString());
+    }
+
+    private boolean matchesDateFilters(JCRNodeWrapper node,
+                                       GqlSearchFiltersInput filters,
+                                       String language) throws RepositoryException {
+        if (filters == null) {
+            return true;
+        }
+
+        Calendar createdAfter = parseDateFilter(filters.getCreatedAfter(), false);
+        Calendar createdBefore = parseDateFilter(filters.getCreatedBefore(), true);
+        Calendar modifiedAfter = parseDateFilter(filters.getModifiedAfter(), false);
+        Calendar modifiedBefore = parseDateFilter(filters.getModifiedBefore(), true);
+
+        if (createdAfter == null && createdBefore == null && modifiedAfter == null && modifiedBefore == null) {
+            return true;
+        }
+
+        JCRNodeWrapper translationNode = getTranslationNode(node, language);
+        Calendar created = resolveNodeDate(node, translationNode, "jcr:created");
+        Calendar modified = resolveNodeDate(node, translationNode, "jcr:lastModified");
+
+        if (createdAfter != null && (created == null || created.before(createdAfter))) {
+            return false;
+        }
+        if (createdBefore != null && (created == null || created.after(createdBefore))) {
+            return false;
+        }
+        if (modifiedAfter != null && (modified == null || modified.before(modifiedAfter))) {
+            return false;
+        }
+        return modifiedBefore == null || (modified != null && !modified.after(modifiedBefore));
+    }
+
+    private Calendar resolveNodeDate(JCRNodeWrapper node,
+                                     JCRNodeWrapper translationNode,
+                                     String propertyName) throws RepositoryException {
+        if (translationNode != null && translationNode.hasProperty(propertyName)) {
+            return translationNode.getProperty(propertyName).getDate();
+        }
+        if (node != null && node.hasProperty(propertyName)) {
+            return node.getProperty(propertyName).getDate();
+        }
+        return null;
+    }
+
     private JCRNodeWrapper getTranslationNode(JCRNodeWrapper node, String language) throws RepositoryException {
         if (StringUtils.isBlank(language)) {
             return null;
@@ -979,21 +1002,75 @@ public class SearchAndReplaceOperations {
         return caseInsensitivePattern.matcher(text).replaceAll(Matcher.quoteReplacement(safeReplacement));
     }
 
-    private Calendar parseDateFilter(String dateFilter) {
+    private Calendar parseDateFilter(String dateFilter, boolean endOfDay) {
         if (StringUtils.isBlank(dateFilter)) {
             return null;
         }
 
-        synchronized (DATE_FILTER_FORMAT) {
+        LocalDate localDate = parseToLocalDate(dateFilter.trim());
+        if (localDate == null) {
+            logger.warn("Invalid date filter format: {}", dateFilter);
+            return null;
+        }
+
+        ZonedDateTime zonedDateTime = endOfDay ?
+                localDate.atTime(23, 59, 59, 999_000_000).atZone(ZoneId.systemDefault()) :
+                localDate.atStartOfDay(ZoneId.systemDefault());
+        return GregorianCalendar.from(zonedDateTime);
+    }
+
+    private LocalDate parseToLocalDate(String rawValue) {
+        if (StringUtils.isBlank(rawValue)) {
+            return null;
+        }
+
+        List<DateTimeFormatter> dateOnlyFormats = Arrays.asList(
+                DateTimeFormatter.ISO_LOCAL_DATE,
+                DAY_MONTH_YEAR_SLASH_FORMAT,
+                DAY_MONTH_YEAR_DASH_FORMAT,
+                MONTH_DAY_YEAR_SLASH_FORMAT
+        );
+
+        for (DateTimeFormatter formatter : dateOnlyFormats) {
             try {
-                Date date = DATE_FILTER_FORMAT.parse(dateFilter);
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(date);
-                return calendar;
-            } catch (Exception e) {
-                logger.warn("Invalid date filter format: {}", dateFilter);
-                return null;
+                return LocalDate.parse(rawValue, formatter);
+            } catch (DateTimeParseException e) {
+                // Try next parser
             }
+        }
+
+        try {
+            return OffsetDateTime.parse(rawValue, DateTimeFormatter.ISO_OFFSET_DATE_TIME).toLocalDate();
+        } catch (DateTimeParseException e) {
+            // Try next parser
+        }
+
+        try {
+            return ZonedDateTime.parse(rawValue, DateTimeFormatter.ISO_ZONED_DATE_TIME).toLocalDate();
+        } catch (DateTimeParseException e) {
+            // Try next parser
+        }
+
+        try {
+            return Instant.parse(rawValue).atZone(ZoneId.systemDefault()).toLocalDate();
+        } catch (DateTimeParseException e) {
+            // Try next parser
+        }
+
+        try {
+            return LocalDateTime.parse(rawValue, DateTimeFormatter.ISO_LOCAL_DATE_TIME).toLocalDate();
+        } catch (DateTimeParseException e) {
+            // Try next parser
+        }
+
+        try {
+            Date parsedLegacyDate;
+            synchronized (DATE_FILTER_FORMAT) {
+                parsedLegacyDate = DATE_FILTER_FORMAT.parse(rawValue);
+            }
+            return parsedLegacyDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        } catch (Exception e) {
+            return null;
         }
     }
 

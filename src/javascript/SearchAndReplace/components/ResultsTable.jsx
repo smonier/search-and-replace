@@ -120,6 +120,7 @@ export const ResultsTable = ({nodes, searchTerm, selectedLanguage, siteKey, sele
                         const isExpanded = expandedNodes.has(node.uuid);
                         const matchingProps = (node.matchingProperties || []).filter(p => p && p.name);
                         const replaceableProps = matchingProps.filter(p => p.replaceable);
+                        const localizedDisplayName = node.displayName || node.name;
 
                         return (
                             <React.Fragment key={node.uuid}>
@@ -132,7 +133,7 @@ export const ResultsTable = ({nodes, searchTerm, selectedLanguage, siteKey, sele
                                     </TableBodyCell>
                                     <TableBodyCell>
                                         <Typography variant="body" weight="bold">
-                                            {node.displayName || node.name}
+                                            <span title={localizedDisplayName}>{localizedDisplayName}</span>
                                         </Typography>
                                     </TableBodyCell>
                                     <TableBodyCell>

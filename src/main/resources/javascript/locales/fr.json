@@ -23,6 +23,8 @@
     "selectProperties": "Sélectionner les propriétés...",
     "createdDate": "Date de Création",
     "modifiedDate": "Date de Modification",
+    "startDate": "Date de début",
+    "endDate": "Date de fin",
     "from": "De",
     "to": "À",
     "applyFilters": "Appliquer les Filtres",

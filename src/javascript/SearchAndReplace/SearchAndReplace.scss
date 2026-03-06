@@ -171,9 +171,19 @@ $spacing-unit: 6px;
     width: 100%;
 }
 
+.filterDropdownBottomAligned {
+    margin-top: auto;
+}
+
 .dateRangeInputs {
     display: flex;
     gap: $spacing-unit * 2;
+}
+
+.dateField {
+    display: grid;
+    gap: $spacing-unit;
+    flex: 1;
 }
 
 .filtersActions {

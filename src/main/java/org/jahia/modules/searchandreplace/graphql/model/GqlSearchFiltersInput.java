@@ -6,7 +6,7 @@ import graphql.annotations.annotationTypes.GraphQLName;
 /**
  * GraphQL input for search filters
  */
-@GraphQLName("SearchFiltersInput")
+@GraphQLName("SearchAndReplaceSearchFiltersInput")
 public class GqlSearchFiltersInput {
 
     private String nodeType;

@@ -6,7 +6,7 @@ import graphql.annotations.annotationTypes.GraphQLName;
 /**
  * GraphQL type for node type info
  */
-@GraphQLName("NodeTypeInfo")
+@GraphQLName("SearchAndReplaceNodeTypeInfo")
 public class GqlNodeTypeInfo {
 
     private String name;

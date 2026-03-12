@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * GraphQL type for replace preview
  */
-@GraphQLName("ReplacePreview")
+@GraphQLName("SearchAndReplaceReplacePreview")
 public class GqlReplacePreview {
 
     private String nodeUuid;

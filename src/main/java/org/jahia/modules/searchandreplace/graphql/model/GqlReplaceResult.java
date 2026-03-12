@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * GraphQL type for replace result
  */
-@GraphQLName("ReplaceResult")
+@GraphQLName("SearchAndReplaceReplaceResult")
 public class GqlReplaceResult {
 
     private List<String> successfulNodes;

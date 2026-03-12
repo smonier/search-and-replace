@@ -6,7 +6,7 @@ import graphql.annotations.annotationTypes.GraphQLName;
 /**
  * GraphQL type for a property match
  */
-@GraphQLName("PropertyMatch")
+@GraphQLName("SearchAndReplacePropertyMatch")
 public class GqlPropertyMatch {
 
     private String name;

@@ -36,7 +36,7 @@
     <name>Search And Replace</name>
     <version>1.0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <description>This is the custom ReactJS module (Search And Replace) for running on a Jahia server.</description>
+    <description>Search And Replace is a Jahia DX module that adds a Moonstone-based Content Editor tool and GraphQL API extensions to search, preview, and replace text across a site subtree. It supports multilingual content through translation nodes, recursive matching on STRING and STRING[] properties (including rich text), filterable results (content type and dates), selectable property-level replacement, and safe operational guardrails for validation, site scoping, and performance.</description>
     <scm>
         <connection>scm:git:git@github.com:smonier/search-and-replace.git</connection>
         <developerConnection>scm:git:git@github.com:smonier/search-and-replace.git</developerConnection>

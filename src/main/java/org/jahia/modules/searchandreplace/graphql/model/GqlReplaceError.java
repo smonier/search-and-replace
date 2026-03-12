@@ -6,7 +6,7 @@ import graphql.annotations.annotationTypes.GraphQLName;
 /**
  * GraphQL type for replace error
  */
-@GraphQLName("ReplaceError")
+@GraphQLName("SearchAndReplaceReplaceError")
 public class GqlReplaceError {
 
     private String nodeUuid;

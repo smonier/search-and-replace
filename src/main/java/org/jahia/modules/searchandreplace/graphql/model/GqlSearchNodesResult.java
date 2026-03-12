@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * GraphQL type for search results
  */
-@GraphQLName("SearchNodesResult")
+@GraphQLName("SearchAndReplaceSearchNodesResult")
 public class GqlSearchNodesResult {
 
     private List<GqlSearchResultNode> nodes;

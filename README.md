@@ -94,14 +94,14 @@ The module adds `searchAndReplace` on both `Query` and `Mutation`.
 - `previewReplace(nodeUuid, termToReplace, replacementTerm, propertiesToReplace)`
 
 ### Input/Enums
-- `InputSearchFiltersInput` (generated from `SearchFiltersInput`)
+- `InputSearchAndReplaceSearchFiltersInput` (generated from `SearchAndReplaceSearchFiltersInput`)
   - `nodeType`
   - `createdBefore`
   - `createdAfter`
   - `modifiedBefore`
   - `modifiedAfter`
   - `properties`
-- `SearchMode`
+- `SearchAndReplaceSearchMode`
   - `EXACT_MATCH`
   - `CASE_INSENSITIVE`
   - `REGEX`
@@ -112,7 +112,7 @@ query SearchNodesQuery(
   $termToSearch: String!
   $siteKey: String!
   $language: String!
-  $filters: InputSearchFiltersInput
+  $filters: InputSearchAndReplaceSearchFiltersInput
 ) {
   searchAndReplace {
     searchNodes(
@@ -152,7 +152,7 @@ mutation ReplaceInNodesMutation(
   $replacementTerm: String!
   $language: String!
   $propertiesToReplace: [String!]
-  $searchMode: SearchMode
+  $searchMode: SearchAndReplaceSearchMode
 ) {
   searchAndReplace {
     replaceInNodes(
@@ -254,7 +254,7 @@ mvn -q -DskipTests compile
 - Check module state and restart/redeploy if needed.
 
 ### Query validation error on input type
-- Use `InputSearchFiltersInput` in GraphQL queries (generated input type name).
+- Use `InputSearchAndReplaceSearchFiltersInput` in GraphQL queries (generated input type name).
 
 ### No result for known richtext keyword
 - Verify the selected language matches the translated content language.

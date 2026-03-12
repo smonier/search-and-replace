@@ -6,7 +6,7 @@ import graphql.annotations.annotationTypes.GraphQLName;
 /**
  * GraphQL type for property info
  */
-@GraphQLName("PropertyInfo")
+@GraphQLName("SearchAndReplacePropertyInfo")
 public class GqlPropertyInfo {
 
     private String name;

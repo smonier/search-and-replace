@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
  * Query to search for nodes containing a specific term
  */
 export const SEARCH_NODES_QUERY = gql`
-    query SearchNodesQuery($termToSearch: String!, $siteKey: String!, $language: String!, $filters: InputSearchFiltersInput) {
+    query SearchNodesQuery($termToSearch: String!, $siteKey: String!, $language: String!, $filters: InputSearchAndReplaceSearchFiltersInput) {
         searchAndReplace {
             searchNodes(termToSearch: $termToSearch, siteKey: $siteKey, language: $language, filters: $filters) {
                 totalCount
@@ -108,7 +108,7 @@ export const REPLACE_IN_NODES_MUTATION = gql`
         $replacementTerm: String!
         $language: String!
         $propertiesToReplace: [String!]
-        $searchMode: SearchMode
+        $searchMode: SearchAndReplaceSearchMode
     ) {
         searchAndReplace {
             replaceInNodes(

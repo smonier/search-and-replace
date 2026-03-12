@@ -6,7 +6,7 @@ import graphql.annotations.annotationTypes.GraphQLName;
 /**
  * GraphQL type for property preview
  */
-@GraphQLName("PropertyPreview")
+@GraphQLName("SearchAndReplacePropertyPreview")
 public class GqlPropertyPreview {
 
     private String name;

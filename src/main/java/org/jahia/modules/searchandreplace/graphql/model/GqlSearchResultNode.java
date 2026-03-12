@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * GraphQL type for a search result node
  */
-@GraphQLName("SearchResultNode")
+@GraphQLName("SearchAndReplaceSearchResultNode")
 public class GqlSearchResultNode {
 
     private String uuid;
